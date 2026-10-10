@@ -43,12 +43,16 @@ report or `-Json` for automation.
 Run it monthly, before rebuilding the local add-on, after a telescope firmware
 update, and whenever HACS reports a Seestar card update.
 
-## One-time personal fork setup
+## Personal fork and remote layout
 
-As of 2026-10-10 this checkout's `origin` points directly to the public
-`jaxzin/ha-seestar` repository and `Conehead1234/ha-seestar` does not exist or is
-not accessible. Create that fork in GitHub before trying to push the local
-branch. Then configure conventional remotes:
+As of 2026-10-10 the local branch is backed up in the personal fork and this
+checkout uses the conventional remote layout:
+
+- `origin`: `https://github.com/Conehead1234/ha-seestar.git`
+- `upstream`: `https://github.com/jaxzin/ha-seestar.git`
+
+When repairing an older checkout that still has the public repository as
+`origin`, configure the same layout with:
 
 ```powershell
 git remote rename origin upstream
@@ -57,9 +61,9 @@ git fetch --prune upstream
 git push -u origin codex/interop-pem-local
 ```
 
-Afterward, `origin` is Matt's recoverable copy and `upstream` is the public
-project. Do not force-push the local deployment branch unless its history was
-deliberately rewritten and the consequences have been reviewed.
+`origin` is Matt's recoverable copy and `upstream` is the public project. Do not
+force-push the local deployment branch unless its history was deliberately
+rewritten and the consequences have been reviewed.
 
 ## Updating the add-on/bridge upstream
 
