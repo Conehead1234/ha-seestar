@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The bundled `seestar_alp` source is pinned to upstream auth-fix merge
+  `ca294570e875` (PR #753), replacing v3.2.2's startup handshake deadlock with
+  the bounded non-fatal, self-healing authentication implementation.
 - Last-known telemetry survives driver and add-on restarts; unknown values stay
   honestly unknown. The bridge merges each poll cycle into a persistent
   per-scope snapshot (seeded once from its own retained MQTT state topic at

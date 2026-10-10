@@ -339,7 +339,7 @@ bundled mode, seestar_alp) from the same image. There is no Supervisor there, so
 Under compose, even the **bundled** setup runs the bridge in *external* mode:
 `options.json` sets `alpaca_host: "seestar_alp:5555"`, so the bridge resolves each
 scope's preview address from the **seestar_alp** service's `/config.json` (or the
-`/config` HTML page on the pinned `v3.2.2`) web UI on port **5432** — which is why
+`/config` HTML page on an older driver) web UI on port **5432** — which is why
 the `seestar_alp` service publishes `5432`. It does **not** read the bind-mounted
 `config.toml` for the preview address (only seestar_alp reads `config.toml`).
 Telemetry is unaffected — it never needs the preview address.
@@ -400,14 +400,12 @@ updating.
 
 These are deliberate v1 limitations, documented so they don't surprise you:
 
-1. **Bundled seestar_alp is pinned to `v3.2.2`.** That release predates the
-   machine-readable `/config.json` endpoint
-   ([smart-underworld/seestar_alp#749](https://github.com/smart-underworld/seestar_alp/pull/749)).
-   This does **not** affect bundled mode — the bridge reads the scope address
-   straight from `config.toml` inside the container. In **external** mode against
-   an older seestar_alp, the bridge falls back to scraping the `/config` HTML page
-   for the preview address; once you run a seestar_alp new enough to expose
-   `/config.json`, it uses that automatically.
+1. **Bundled seestar_alp is pinned to an exact upstream commit.** Commit
+   `ca294570e875` is based on v3.2.2 and includes the bounded authentication
+   fixes merged in PR #753 plus the machine-readable `/config.json` endpoint.
+   It is pinned by immutable SHA rather than tracking `main`. In **external**
+   mode against an older seestar_alp, the bridge still falls back to scraping
+   the `/config` HTML page for the preview address.
 2. **seestar_alp's own dependencies are not hash-pinned.** They are installed from
    the upstream `requirements.txt` at its pinned tag. The bridge's own
    dependencies **are** hash-pinned (`--require-hashes`).

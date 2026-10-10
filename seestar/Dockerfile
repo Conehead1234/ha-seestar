@@ -12,9 +12,11 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# Pinned upstream seestar_alp release. Bumping this is a one-line change plus a
-# re-verify of the /config scrape (see plan Task 9).
-ARG SEESTAR_ALP_REF=v3.2.2
+# Pinned upstream commit based on v3.2.2 plus the bounded, reviewed firmware
+# authentication fixes merged in PR #753. In particular, the handshake reads
+# its response inline before the normal receive thread starts, avoiding the
+# v3.2.2 authentication deadlock on current S30 Pro firmware.
+ARG SEESTAR_ALP_REF=ca294570e8750457ae77cfce6de632db8db1ccde
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -45,8 +47,11 @@ ENV PATH="/opt/venv/bin:${PATH}"
 # LICENSE*.txt files (LICENSE.txt + three LICENSE-<component>.txt) live at the
 # repo root and are preserved in the image as-is (see /app/seestar_alp/LICENSE*.txt);
 # NOTICE links the upstream project.
-RUN git clone --depth 1 --branch "${SEESTAR_ALP_REF}" \
-        https://github.com/smart-underworld/seestar_alp /app/seestar_alp \
+RUN git init /app/seestar_alp \
+    && git -C /app/seestar_alp remote add origin \
+        https://github.com/smart-underworld/seestar_alp \
+    && git -C /app/seestar_alp fetch --depth 1 origin "${SEESTAR_ALP_REF}" \
+    && git -C /app/seestar_alp checkout --detach FETCH_HEAD \
     && pip install --no-cache-dir -r /app/seestar_alp/requirements.txt
 
 # --- seestar_bridge (our code, Apache-2.0) ------------------------------------

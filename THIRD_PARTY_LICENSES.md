@@ -6,7 +6,7 @@ under the [Apache License, Version 2.0](LICENSE).
 ## seestar_alp (GPL-3.0)
 
 The built image bundles the [seestar_alp](https://github.com/smart-underworld/seestar_alp)
-Alpaca driver, pinned to upstream tag **`v3.2.2`** (see
+Alpaca driver, pinned to upstream commit **`ca294570e8750457ae77cfce6de632db8db1ccde`** (see
 [`seestar/Dockerfile`](seestar/Dockerfile), `SEESTAR_ALP_REF`). seestar_alp is
 licensed under the **GNU General Public License, version 3.0** and is bundled at
 arm's length — it runs as a separate process that this app talks to only over the
@@ -29,7 +29,7 @@ docker exec <container> cat /app/seestar_alp/LICENSE.txt
 ```
 
 The corresponding source is the public upstream repository at the pinned tag:
-<https://github.com/smart-underworld/seestar_alp/tree/v3.2.2>.
+<https://github.com/smart-underworld/seestar_alp/tree/ca294570e8750457ae77cfce6de632db8db1ccde>.
 
 ### What this means if you redistribute the image
 
