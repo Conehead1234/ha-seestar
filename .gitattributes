@@ -1,0 +1,8 @@
+* text=auto
+
+# Docker and s6-overlay require Unix line endings. Several s6 metadata files
+# have no extension, so cover the complete rootfs tree explicitly.
+Dockerfile text eol=lf
+*.sh text eol=lf
+seestar/Dockerfile text eol=lf
+seestar/rootfs/** text eol=lf
