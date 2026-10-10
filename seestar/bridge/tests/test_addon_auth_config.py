@@ -35,3 +35,18 @@ def test_docs_never_instruct_users_to_store_key_content_in_options():
     assert "/share/seestar/seestar_interop.pem" in docs
     assert "do not paste it into the add-on options" in normalized_docs
     assert "chmod 0600" in docs
+
+
+def test_sensitive_payload_logging_is_safe_by_default():
+    manifest = (_ADDON_DIR / "config.yaml").read_text(encoding="utf-8")
+    script = (
+        _ADDON_DIR / "rootfs/etc/s6-overlay/scripts/init-config"
+    ).read_text(encoding="utf-8")
+    run_script = (
+        _ADDON_DIR / "rootfs/etc/s6-overlay/s6-rc.d/seestar-alp/run"
+    ).read_text(encoding="utf-8")
+
+    assert "log_sensitive_payloads: false" in manifest
+    assert "log_sensitive_payloads: bool" in manifest
+    assert "SEESTAR_LOG_SENSITIVE_PAYLOADS' 'false'" in script
+    assert "/app/log-safety" in run_script

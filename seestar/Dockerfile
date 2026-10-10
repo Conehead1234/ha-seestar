@@ -54,6 +54,11 @@ RUN git init /app/seestar_alp \
     && git -C /app/seestar_alp checkout --detach FETCH_HEAD \
     && pip install --no-cache-dir -r /app/seestar_alp/requirements.txt
 
+# Python imports sitecustomize automatically. The module installs a process-wide
+# LogRecord factory for the bundled driver which recursively redacts sensitive
+# telescope response fields unless the operator explicitly opts in.
+COPY log-safety/ /app/log-safety/
+
 # --- seestar_bridge (our code, Apache-2.0) ------------------------------------
 # Install the bridge's pinned, hashed deps first (better layer caching), then the
 # package source. requirements.txt is the `uv export` hashed lock, so install it

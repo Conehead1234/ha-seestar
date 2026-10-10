@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Default-on bundled-driver log redaction, with an explicit
+  `log_sensitive_payloads` opt-in for short diagnostic sessions. Raw telescope
+  responses can contain Wi-Fi credentials, hardware identifiers, and precise
+  location data.
 - Persistent firmware 7.18+ authentication for the bundled driver via an
   operator-managed, read-only interoperability PEM under `/share/seestar/`.
   Startup validates the private key without logging or storing its content and

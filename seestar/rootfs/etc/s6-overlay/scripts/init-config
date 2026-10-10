@@ -130,6 +130,24 @@ case "${log_level_raw}" in
 esac
 log_level_upper="$(printf '%s' "${log_level_raw}" | tr '[:lower:]' '[:upper:]')"
 
+# The upstream driver logs complete telescope response dictionaries at INFO.
+# Those dictionaries can include Wi-Fi credentials, hardware identifiers, and
+# precise GPS coordinates. Keep the redaction filter enabled by default; an
+# operator must explicitly opt in before raw values are allowed into the log.
+log_sensitive_payloads="$(bashio::config 'log_sensitive_payloads' 'false' | tr '[:upper:]' '[:lower:]')"
+case "${log_sensitive_payloads}" in
+    true|1|yes|on)
+        write_env 'SEESTAR_LOG_SENSITIVE_PAYLOADS' 'true'
+        bashio::log.warning \
+            "Sensitive payload logging is ENABLED; telescope responses may expose credentials and location data."
+        ;;
+    *)
+        write_env 'SEESTAR_LOG_SENSITIVE_PAYLOADS' 'false'
+        bashio::log.info \
+            "Sensitive payload logging is disabled; bundled-driver responses will be redacted."
+        ;;
+esac
+
 # Firmware 7.18+ protects synchronous commands with challenge-response auth.
 # The key remains operator-managed under HA's read-only /share mount; only its
 # path is written to config.toml. A blank option preserves pre-auth behaviour.

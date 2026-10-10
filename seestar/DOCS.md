@@ -136,7 +136,8 @@ Setting **both** `scopes` and `alpaca_host` is rejected at startup; so is settin
 | `event_poll_sec` | int (1–3600) | `10` | How often to poll the fast Alpaca event stream for imaging telemetry. Lower is more responsive; higher is gentler on the driver. |
 | `state_poll_sec` | int (1–3600) | `30` | How often to poll the slower device-state call (mount mode, focuser, battery, firmware). These fields refresh only at idle gaps during a capture — see [Behavior during active imaging](#known-caveats). |
 | `preview_max_px` | int (256–4096) | `1280` | Longest-edge limit for the stacked preview before publishing; larger previews are downscaled to this. |
-| `log_level` | enum | `info` | Verbosity of the bridge and bundled driver. One of `trace`, `debug`, `info`, `notice`, `warning`, `error`, `fatal`. Use `debug` or `trace` to diagnose a connection problem. |
+| `log_level` | enum | `info` | Verbosity of the bridge and bundled driver. One of `trace`, `debug`, `info`, `notice`, `warning`, `error`, `fatal`. Use `debug` or `trace` to diagnose a connection problem. Sensitive bundled-driver fields remain redacted by default at every level. |
+| `log_sensitive_payloads` | bool | `false` | **Bundled mode only.** Opt in to raw telescope response payloads. These can contain Wi-Fi credentials, hardware identifiers, and precise location data. Keep this off except during a short controlled diagnostic session, and delete the resulting log afterward. |
 
 ## What gets published
 

@@ -7,7 +7,7 @@
 # image from GHCR ({arch} is substituted per architecture).
 name: Seestar for Home Assistant (Local PEM)
 slug: seestar_pem
-version: "1.0.7-local.2"
+version: "1.0.7-local.3"
 description: >-
   Live Seestar imaging telemetry + a stacked-image preview in Home Assistant via
   MQTT discovery. Bundles the seestar_alp driver, or reuses your own.
@@ -60,6 +60,7 @@ options:
   state_poll_sec: 30
   preview_max_px: 1280
   log_level: info
+  log_sensitive_payloads: false
 
 schema:
   # Bundled mode only: one HA device per entry; seeds seestar_alp's config.toml.
@@ -85,3 +86,5 @@ schema:
   state_poll_sec: int(1,3600)
   preview_max_px: int(256,4096)
   log_level: list(trace|debug|info|notice|warning|error|fatal)
+  # Bundled mode only. Raw driver responses can contain credentials/location.
+  log_sensitive_payloads: bool

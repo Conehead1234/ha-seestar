@@ -76,4 +76,12 @@ configuration:
     name: Log level
     description: >-
       Verbosity of the bridge and bundled driver logs. Use debug or trace when
-      diagnosing a connection problem. Default info.
+      diagnosing a connection problem. Raw bundled-driver payloads remain
+      redacted unless Sensitive payload logging is enabled. Default info.
+  log_sensitive_payloads:
+    name: Sensitive payload logging
+    description: >-
+      Bundled mode only. Allow raw telescope response payloads in the app log.
+      These payloads can contain Wi-Fi credentials, identifiers, and precise
+      location data. Keep this disabled except for a short, controlled diagnostic
+      session, then delete the resulting log. Default disabled.

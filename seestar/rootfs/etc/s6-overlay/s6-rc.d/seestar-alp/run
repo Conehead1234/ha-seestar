@@ -22,4 +22,5 @@ fi
 
 bashio::log.info "Starting bundled seestar_alp driver."
 cd /app/seestar_alp || bashio::exit.nok "seestar_alp directory missing from image."
+export PYTHONPATH="/app/log-safety${PYTHONPATH:+:${PYTHONPATH}}"
 exec python3 root_app.py

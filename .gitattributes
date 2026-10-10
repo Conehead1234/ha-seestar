@@ -6,3 +6,4 @@ Dockerfile text eol=lf
 *.sh text eol=lf
 seestar/Dockerfile text eol=lf
 seestar/rootfs/** text eol=lf
+seestar/log-safety/** text eol=lf
