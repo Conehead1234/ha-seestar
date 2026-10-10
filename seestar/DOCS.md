@@ -124,6 +124,7 @@ Setting **both** `scopes` and `alpaca_host` is rejected at startup; so is settin
 |---|---|---|---|
 | `scopes` | list of `{name, host}` | `[]` | **Bundled mode only.** One entry per telescope. `name` is the HA device name (see the [naming caveat](#renaming-a-scope-creates-a-new-device)); `host` is the scope's LAN IP or hostname. Each becomes its own HA device. Leave empty in external mode. |
 | `alpaca_host` | string | `""` | Blank = run the bundled driver. Set to `host:port` of your own seestar_alp to reuse it (and leave `scopes` empty). |
+| `interop_pem_path` | string | `""` | **Bundled mode only.** Full in-container path to an unencrypted RSA interoperability key directly under `/share/seestar/`, for example `/share/seestar/seestar_interop.pem`. Leave blank to disable authenticated command-channel access. The key content is never stored in options or logs. |
 | `alpaca_webui_port` | port | `5432` | **External mode only.** The port your seestar_alp serves its config on, used to look up each scope's address for the preview. |
 | `imaging_port` | port | `7556` | Port of seestar_alp's imaging server on the Alpaca host, where the Live view camera grabs its `/vid` MJPEG frames. Change only for an external seestar_alp bound to a non-stock imaging port. |
 | `mqtt_host` | string | `""` | Blank = use the Mosquitto add-on via the Supervisor. Set to override with another broker. |
@@ -441,6 +442,27 @@ These are deliberate v1 limitations, documented so they don't surprise you:
    concern, not something this add-on ships — see the
    [seestar_alp project](https://github.com/smart-underworld/seestar_alp) and its
    community for how.
+
+   Once you have legally obtained a compatible key, do not paste it into the
+   add-on options or commit it to a repository. Create a private directory in
+   Home Assistant's `share` storage, copy the file there, and configure only its
+   in-container path:
+
+   ```sh
+   mkdir -p /share/seestar
+   chmod 0700 /share/seestar
+   chmod 0600 /share/seestar/seestar_interop.pem
+   ```
+
+   Set **Interoperability PEM path** to
+   `/share/seestar/seestar_interop.pem`, save, and restart the add-on. At startup
+   the add-on requires a readable, non-symlink `.pem` directly under
+   `/share/seestar/`, validates that it is an unencrypted RSA private key without
+   logging its content, and writes only the path to the generated driver config.
+   The `/share` mount is read-only inside the add-on. A missing or invalid file
+   stops startup with a non-secret error rather than silently running without
+   authentication. To roll back, clear the option and restart; the key file can
+   then be removed separately.
 
    <a id="behavior-during-active-imaging"></a>
 

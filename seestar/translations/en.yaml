@@ -17,6 +17,14 @@ configuration:
       instead, set host:port here AND leave the Telescopes list empty — the
       external instance already knows your scopes. Setting both is rejected at
       startup.
+  interop_pem_path:
+    name: Interoperability PEM path
+    description: >-
+      Bundled mode only. Optional path to an unencrypted RSA private key used by
+      firmware 7.18+ authentication. Store the key privately under
+      /share/seestar/ and enter its full in-container path, for example
+      /share/seestar/seestar_interop.pem. The key remains read-only and is never
+      stored in add-on options or logs. Leave blank to disable authentication.
   alpaca_webui_port:
     name: External web UI port
     description: >-

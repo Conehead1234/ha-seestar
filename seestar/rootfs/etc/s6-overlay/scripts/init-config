@@ -37,6 +37,15 @@ write_env() {
     printf '%s' "${value}" > "${S6_ENV_DIR}/${name}"
 }
 
+# Escape backslashes and double-quotes so an operator-supplied value can't break
+# out of the TOML basic string it is embedded in.
+toml_escape() {
+    local value="${1}"
+    value="${value//\\/\\\\}"
+    value="${value//\"/\\\"}"
+    printf '%s' "${value}"
+}
+
 # --- 1. MQTT resolution -------------------------------------------------------
 
 if bashio::config.is_empty 'mqtt_host'; then
@@ -121,6 +130,44 @@ case "${log_level_raw}" in
 esac
 log_level_upper="$(printf '%s' "${log_level_raw}" | tr '[:lower:]' '[:upper:]')"
 
+# Firmware 7.18+ protects synchronous commands with challenge-response auth.
+# The key remains operator-managed under HA's read-only /share mount; only its
+# path is written to config.toml. A blank option preserves pre-auth behaviour.
+interop_pem_path="$(bashio::config 'interop_pem_path' '')"
+if [ -n "${interop_pem_path}" ]; then
+    if [[ ! "${interop_pem_path}" =~ ^/share/seestar/[A-Za-z0-9._-]+\.pem$ ]]; then
+        bashio::exit.nok \
+            "Invalid interop_pem_path. Use a .pem file directly under /share/seestar/."
+    fi
+    if [ ! -f "${interop_pem_path}" ] || [ ! -r "${interop_pem_path}" ] || [ -L "${interop_pem_path}" ]; then
+        bashio::exit.nok \
+            "The configured interoperability PEM is not a readable regular file, or is a symlink."
+    fi
+
+    # Use the driver's existing cryptography dependency to reject malformed,
+    # encrypted, or non-RSA keys without printing key material or a traceback.
+    if ! python3 - "${interop_pem_path}" <<'PY'
+import sys
+
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
+
+try:
+    with open(sys.argv[1], "rb") as handle:
+        key = serialization.load_pem_private_key(handle.read(), password=None)
+except Exception:
+    raise SystemExit(1)
+
+if not isinstance(key, RSAPrivateKey):
+    raise SystemExit(1)
+PY
+    then
+        bashio::exit.nok \
+            "The configured interoperability PEM is not a valid unencrypted RSA private key."
+    fi
+    bashio::log.info "Validated the configured interoperability PEM."
+fi
+
 {
     # Bind to all interfaces so the bridge reaches Alpaca by container DNS and
     # the imaging/web-UI ports are reachable through ingress + the published port.
@@ -137,20 +184,16 @@ log_level_upper="$(printf '%s' "${log_level_raw}" | tr '[:lower:]' '[:upper:]')"
     echo "[logging]"
     echo "log_to_stdout = true"
     echo "log_level = '${log_level_upper}'"
+    if [ -n "${interop_pem_path}" ]; then
+        echo ""
+        echo "[seestar_initialization]"
+        echo "interop_pem = \"$(toml_escape "${interop_pem_path}")\""
+    fi
 } > "${CONFIG_TOML_PATH}"
 
 # config.toml holds only scope names + LAN IPs (never secrets — those live in
 # /run/s6/container_environment). Keep it readable by the service user only.
 chmod 0640 "${CONFIG_TOML_PATH}"
-
-# Escape backslashes and double-quotes so an operator-supplied value can't break
-# out of the TOML basic string it is embedded in.
-toml_escape() {
-    local value="${1}"
-    value="${value//\\/\\\\}"
-    value="${value//\"/\\\"}"
-    printf '%s' "${value}"
-}
 
 # One [[seestars]] block per configured scope. device_num is 1-based and stable
 # across restarts; it is the Alpaca DeviceNumber the bridge enumerates and the

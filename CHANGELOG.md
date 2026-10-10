@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Persistent firmware 7.18+ authentication for the bundled driver via an
+  operator-managed, read-only interoperability PEM under `/share/seestar/`.
+  Startup validates the private key without logging or storing its content and
+  renders only its path into the regenerated `config.toml`.
 - Phase-2 control layer: safety-gated MQTT command entities per scope (imaging
   sessions, goto, saved-plan execution, settings, power) behind two default-off
   safety switches, with every dispatch outcome surfaced on a **Last command

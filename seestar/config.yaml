@@ -7,7 +7,7 @@
 # image from GHCR ({arch} is substituted per architecture).
 name: Seestar for Home Assistant
 slug: seestar
-version: "1.0.6"
+version: "1.0.7"
 description: >-
   Live Seestar imaging telemetry + a stacked-image preview in Home Assistant via
   MQTT discovery. Bundles the seestar_alp driver, or reuses your own.
@@ -38,12 +38,19 @@ hassio_api: true
 services:
   - mqtt:want
 
+# The firmware interoperability key is supplied by the operator and never
+# baked into the image or add-on options. /share is read-only in the container.
+map:
+  - type: share
+    read_only: true
+
 # Prebuilt multi-arch image; {arch} is substituted by the Supervisor.
 image: ghcr.io/jaxzin/ha-seestar-{arch}
 
 options:
   scopes: []
   alpaca_host: ""
+  interop_pem_path: ""
   alpaca_webui_port: 5432
   imaging_port: 7556
   mqtt_host: ""
@@ -64,6 +71,8 @@ schema:
       host: str
   # Blank = bundled driver; else host:port of your own seestar_alp.
   alpaca_host: str?
+  # Bundled mode only. Must be a .pem directly below /share/seestar/.
+  interop_pem_path: str?
   # External mode: the seestar_alp web-UI port discovery reads /config from.
   alpaca_webui_port: port
   # seestar_alp's imaging server on the Alpaca host (the live /vid camera).
