@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A read-only upstream checker and maintenance runbook covering the add-on,
+  exact bundled-driver pin, personal-fork setup, validation, and rollback.
 - Default-on bundled-driver log redaction, with an explicit
   `log_sensitive_payloads` opt-in for short diagnostic sessions. Raw telescope
   responses can contain Wi-Fi credentials, hardware identifiers, and precise

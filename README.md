@@ -87,6 +87,10 @@ challenge-response interop key configured in seestar_alp — see
 See **[seestar/DOCS.md](seestar/DOCS.md)** for the full options reference, the
 bundled-vs-external choice, the Mosquitto zero-config note, and troubleshooting.
 
+Local forks and exact driver pins need deliberate maintenance rather than blind
+updates. See **[docs/upstream-maintenance.md](docs/upstream-maintenance.md)** and
+run `tools/check-upstreams.ps1` to compare this branch with both upstream repos.
+
 ## Install (HA Container / Core, or a separate host)
 
 If you run Home Assistant **Container** or **Core**, or want the bridge on a
